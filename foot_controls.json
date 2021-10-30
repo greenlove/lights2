@@ -1,0 +1,11 @@
+{
+    "next_palette": {"first": "0x90", "second": "0x11"},
+    "prev_palette": {"first": "0x90", "second": "0x1"},
+    "home": {"first": "0x90", "second": "0xc"},
+    "toggle_special": {"first": "0x90", "second": "0x14"},
+    "brightness": {"first": "0xc0", "second": "0x9", "adjust": ["front", "back"]},
+    "timing": {"first": "0xc0", "second": "0x8", "adjust": ["all", "all"]},
+    "special": {"first": "0xc0", "second": "0x13", "adjust": ["all", "all"]},
+    "first_adjust": {"first": "0xb0", "second": "0x1b"},
+    "second_adjust": {"first": "0xb0", "second": "0x7"}
+}
