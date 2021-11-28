@@ -91,7 +91,9 @@ def clamp(val, minVal, maxVal):
 
 def set_color(lights_list, location, color, settings, acoustics, context):
 
-    stdevs = (float(acoustics["loudness"]) - float(acoustics["avg_loudness"])) / float(acoustics["stdev_loudness"])
+    stdevs = 0.0
+    if float(acoustics["stdev_loudness"]) > 0.0:
+        stdevs = (float(acoustics["loudness"]) - float(acoustics["avg_loudness"])) / float(acoustics["stdev_loudness"])
     std_brightness =  clamp(0.5 + (stdevs / 2.0), 0.0, 1.0)
     
     for light in lights_list:
@@ -134,7 +136,7 @@ if __name__ == '__main__':
     DMX = DmxPy.DmxPy('/dev/ttyUSB0')
     DMX.blackout()
 
-    r = redis.Redis()
+    r = redis.Redis(decode_responses=True)
     frame_rate = 20
     micros_per_frame = 1000000.0 / frame_rate
     start = datetime.datetime.now()

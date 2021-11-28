@@ -4,6 +4,7 @@ import struct
 import math
 import redis
 import datetime
+import numpy as np
 
 form_1 = pyaudio.paInt16 # 16-bit resolution
 chans = 1 # 1 channel
@@ -14,7 +15,6 @@ wav_output_filename = 'test1.wav' # name of .wav file
 
 audio = pyaudio.PyAudio() # create pyaudio instantiation
 r = redis.Redis()
-
 
 print(dir(audio))
 
@@ -38,18 +38,29 @@ variances = []
 loudnesses = []
 variance_sum = 0
 total_chunks = 0
+timestep = 1.0 / samp_rate
+freq = np.fft.fftfreq(chunk, timestep)
+freq_side = freq[range(int(freq.size/2))]
+f_low = 60
+f_high = 150
+f_indices = [x for x in range(freq_side.size) if (freq_side[x] > f_low and freq_side[x] < f_high)]
+
+
+print("f_indices: " + str(f_indices))
 
 while True:
-    data = stream.read(chunk, exception_on_overflow=False)
+    data = stream.read(chunk, exception_on_overflow=False))
 
     total_chunks+=1
-    total_samps = 0
-    total_amps = 0
-    for samp in struct.iter_unpack("<h", data):
-        total_samps += 1
-        total_amps += math.fabs(samp[0])
 
-    loudness = total_amps / total_samps
+    X = np.frombuffer(data, np.ushort)
+    fft = np.fft.fft(X)
+    fftside = abs(fft[range(int(fft.size/2))])
+
+    loudness = 0
+    for index in f_indices:
+        loudness += fftside[index]**2
+    #loudness = 10.0 * np.log10(np.mean(X*X))
     #print ("loudness: " + str(loudness))
     loudnesses.append(loudness)
     loudness_sum += loudness
